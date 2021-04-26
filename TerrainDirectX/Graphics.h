@@ -12,6 +12,9 @@ const float SCREEN_NEAR = 0.1f;
 class Graphics
 {
 public:
+	D3dClass* m_D3d;
+
+public:
 	bool Init(int ScreenWidth, int ScreenHeight, HWND hwnd);
 	bool Release();
 	bool Frame();
@@ -20,7 +23,7 @@ public:
 public:
 	Graphics()
 	{
-
+		m_D3d = NULL;
 	}
 	~Graphics()
 	{

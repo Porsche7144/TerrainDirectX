@@ -14,14 +14,14 @@ void Input::KeyDown(unsigned int key)
 {
 	// 키가 눌리면 상태를 배열에 저장.
 	m_Key[key] = true;
-
+	return;
 }
 
 void Input::KeyUp(unsigned int key)
 {
 	// 키를 떼면 상태를 배열에 저장
 	m_Key[key] = false;
-
+	return;
 }
 
 bool Input::IsKeyDown(unsigned int key)
