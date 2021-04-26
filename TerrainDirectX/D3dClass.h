@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _D3dClass_H_
-#define D3dClass_H_
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3d10.lib")
@@ -12,6 +10,8 @@
 #include <d3d11.h>
 #include "SimpleMath.h"
 #include <wrl.h>
+
+#define DirectX_PI ((float)  3.141592654f)
 
 using namespace Microsoft;
 using namespace WRL;
@@ -40,11 +40,19 @@ public:
 	bool Init(int ScreenWidth, int ScreenHeight, bool vsync, HWND hwnd, 
 			   bool fullscreen, float screenDepth, float screenNear);
 	bool Release();
+	bool PreRender(float red, float green, float blue, float alpha);
+	bool PostRender();
 
+	Matrix CreateProjectionMatrix(float fFov, float Aspect, float fNear, float fFar);
+	Matrix CreateOrthoMatrix(float Width, float Height, float fNear, float fFar);
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetDeviceContext();
+	void GetProjectionMatrix(Matrix ProjMatrix);
+	void GetWorldMatrix(Matrix matWorld);
+	void GetOrthoMatrix(Matrix OrthoMatrix);
+	void GetVideoCardInfo(char* cardName, int& memory);
 
 public:
 	D3dClass();
 	~D3dClass() {}
 };
-
-#endif

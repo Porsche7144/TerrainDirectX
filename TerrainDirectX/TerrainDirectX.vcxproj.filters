@@ -30,6 +30,12 @@
     <ClCompile Include="D3dClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="systemclass.h">
@@ -47,10 +53,20 @@
     <ClInclude Include="SimpleMath.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
       <Filter>헤더 파일</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="colorVS.txt" />
+    <Text Include="colorPS.txt" />
   </ItemGroup>
 </Project>

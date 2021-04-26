@@ -61,7 +61,7 @@ bool SystemClass::Init()
 	}
 
 	// Input 객체 초기화
-	// m_Input->Init();
+	m_Input->Init();
 
 	m_Graphics = new Graphics;
 	if (!m_Graphics)
@@ -118,22 +118,24 @@ bool SystemClass::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	}
 
-	// 윈도우에서 종료를 요청하는 경우 빠져나감.
-	if (msg.message == WM_QUIT)
-	{
-		Exit = true;
-	}
-	else
-	{
-		// 아니면 프레임 호출.
-		result = Frame();
-		if (!result)
+		// 윈도우에서 종료를 요청하는 경우 빠져나감.
+		if (msg.message == WM_QUIT)
 		{
 			Exit = true;
 		}
+		else
+		{
+			// 아니면 프레임 호출.
+			result = Frame();
+			if (!result)
+			{
+				Exit = true;
+			}
+		}
 	}
+
+
 
 	return true;
 }

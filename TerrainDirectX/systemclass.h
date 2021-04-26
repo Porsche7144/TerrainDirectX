@@ -1,6 +1,4 @@
-#ifndef _SYSTEMCLASS_H_
-#define _SYSTEMCLASS_H_
-
+#pragma once
 // 자주 사용하지 않는 API헤더를 포함하지 않게함.
 // 빌드 속도 상승 효과.
 #define WIN32_LEAN_AND_MEAN
@@ -46,6 +44,3 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 //  글로벌 //
 /////////////
 static SystemClass* ApplicationHandle = 0;
-
-
-#endif
