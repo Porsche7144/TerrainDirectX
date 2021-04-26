@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _INPUT_H_
-#define _INPUT_H_
 #define INPUT_SIZE 256
 
 class Input
@@ -24,5 +22,3 @@ public:
 
 	}
 };
-
-#endif

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _D3dClass_H_
-#define D3dClass_H_
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3d10.lib")
@@ -58,5 +56,3 @@ public:
 	D3dClass();
 	~D3dClass() {}
 };
-
-#endif

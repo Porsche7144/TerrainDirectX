@@ -1,8 +1,12 @@
 #pragma once
-#ifndef _Graphics_H_
-#define _Graphics_H_
 #include <windows.h>
 #include "D3dClass.h"
+#include "SimpleMath.h"
+#include <wrl.h>
+#include <dxgi.h>
+#include <d3dcommon.h>
+#include <d3d11.h>
+#include <d3dcompiler.h>
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -30,5 +34,3 @@ public:
 
 	}
 };
-
-#endif
