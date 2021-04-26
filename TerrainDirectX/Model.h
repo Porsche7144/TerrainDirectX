@@ -15,7 +15,7 @@ public:
 	int m_iVertexCount, m_iIndexCount;
 
 public:
-	bool Init();
+	bool Init(ID3D11Device* pDevice);
 	bool Render(ID3D11DeviceContext* pContext);
 	bool Release();
 	bool ReleaseBuffer();

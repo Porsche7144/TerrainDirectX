@@ -12,12 +12,16 @@ int Model::GetIndexCount()
 	return m_iIndexCount;
 }
 
-bool Model::Init()
+bool Model::Init(ID3D11Device* pDevice)
 {
 	bool result;
 
 	// 정점버퍼와 인덱스버퍼 초기화
-	// result = InitBuffers();
+	result = InitBuffers(pDevice);
+	if (!result)
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -126,6 +130,7 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 
 bool Model::Render(ID3D11DeviceContext* pContext)
 {
+	// 정점버퍼와 인덱스버퍼를 그래픽스 파이프라인에 보내 화면에 랜더링 할 준비
 	RenderBuffer(pContext);
 
 	return true;
@@ -154,6 +159,7 @@ bool Model::RenderBuffer(ID3D11DeviceContext* pContext)
 
 bool Model::Release()
 {
+	// 정점버퍼와 인덱스버퍼 해제
 	ReleaseBuffer();
 
 	return true;

@@ -27,10 +27,11 @@ PixelInputType ColorVertexShader(VertexInputType input)
 {
 	PixelInputType output;
 
-	// 행렬 계산을 위해 위치 벡터를 4단위로 변경
+	// 행렬 계산을 위해 position벡터를 w까지 가지는 Vector4로 사용
 	input.position.w = 1.0f;
 
 	// 월드, 뷰, 투영 행렬에 대한 정점의 위치를 계산
+	// 월드, 뷰, 투영 순서로 계산
 	output.position = mul(input.position, worldMatrix);
 	output.position = mul(input.position, viewMatrix);
 	output.position = mul(input.position, projMatrix);
