@@ -36,6 +36,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="systemclass.h">
@@ -59,6 +62,9 @@
     <ClInclude Include="Model.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -66,7 +72,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="colorVS.txt" />
-    <Text Include="colorPS.txt" />
+    <Text Include="..\Shader\colorPS.txt" />
+    <Text Include="..\Shader\colorVS.txt" />
   </ItemGroup>
 </Project>

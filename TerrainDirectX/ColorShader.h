@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics.h"
+#include "Camera.h"
 
 struct MatrixBufferType
 {
@@ -18,8 +18,15 @@ public:
 
 public:
 	bool Init(ID3D11Device* pDevice, HWND hwnd);
+	bool Render(ID3D11DeviceContext* pContext, int IndexCount, Matrix World, Matrix View, Matrix Proj);
 	bool Release();
+
 	bool InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const WCHAR* ps);
+	bool RenderShader(ID3D11DeviceContext* pContext, int IndexCount);
+	bool ReleaseShader();
+
+	void OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, const WCHAR* filename);
+	bool SetShaderParameters(ID3D11DeviceContext* pContext, Matrix World, Matrix View, Matrix Proj);
 
 public:
 	ColorShader();

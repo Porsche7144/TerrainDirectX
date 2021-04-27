@@ -7,6 +7,9 @@
 #include <d3dcommon.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include "Model.h"
+#include "Camera.h"
+#include "ColorShader.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -17,6 +20,10 @@ class Graphics
 {
 public:
 	D3dClass* m_D3d;
+	Camera* m_pCamera;
+	Model* m_pModel;
+	ColorShader* m_pColorShader;
+
 
 public:
 	bool Init(int ScreenWidth, int ScreenHeight, HWND hwnd);
@@ -27,7 +34,10 @@ public:
 public:
 	Graphics()
 	{
-		m_D3d = NULL;
+		m_D3d = nullptr;
+		m_pCamera = nullptr;
+		m_pModel = nullptr;
+		m_pColorShader = nullptr;
 	}
 	~Graphics()
 	{

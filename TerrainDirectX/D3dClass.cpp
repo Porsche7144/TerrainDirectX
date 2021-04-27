@@ -223,7 +223,7 @@ bool D3dClass::Init(int ScreenWidth, int ScreenHeight, bool vsync, HWND hwnd,
 	SwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
 	// 출력된 이후 백버퍼의 내용을 버리도록
-	SwapChainDesc.SwapEffect - DXGI_SWAP_EFFECT_DISCARD;
+	SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 	// 추가 옵션 플래그 사용 안함.
 	SwapChainDesc.Flags = 0;

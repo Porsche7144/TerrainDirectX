@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics.h"
+#include "D3dClass.h"
 
 struct VertexType
 {

@@ -8,10 +8,22 @@
 #include <dxgi.h>
 #include <d3dcommon.h>
 #include <d3d11.h>
+#include <d3dcompiler.h>
 #include "SimpleMath.h"
 #include <wrl.h>
+#include <fstream>
 
 #define DirectX_PI ((float)  3.141592654f)
+
+static float ConvertToRadians(float fDegrees)
+{
+	return fDegrees * (DirectX_PI / 180.0f);
+}
+
+static float ConvertToDegrees(float fRadian)
+{
+	return fRadian * (180.0f / DirectX_PI);
+}
 
 using namespace Microsoft;
 using namespace WRL;
