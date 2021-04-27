@@ -14,7 +14,7 @@ public:
 	ID3D11VertexShader* m_pVertexShader;
 	ID3D11PixelShader* m_pPixelShader;
 	ID3D11InputLayout* m_pLayOut;
-	ID3D11Buffer* m_pMatrixBuffer;
+	ID3D11Buffer* m_pConstantBuffer;
 
 public:
 	bool Init(ID3D11Device* pDevice, HWND hwnd);

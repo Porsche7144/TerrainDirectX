@@ -16,7 +16,7 @@ public:
 	void SetRotation(Vector3 rotate);
 	Vector3 GetPosition();
 	Vector3 GetRotation();
-	void GetViewMatrix(Matrix View);
+	Matrix GetViewMatrix(Matrix View);
 
 
 public:

@@ -153,7 +153,7 @@ bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, 
 
 	// 정점 쉐이더에 있는 행렬 상수 버퍼 구조체 작성
 	// 매 프레임마다 상수버퍼를 업데이트 하므로 BindFlags를 상수버퍼로 바인드
-	matrixBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
 	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -161,7 +161,7 @@ bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, 
 	matrixBufferDesc.StructureByteStride = 0;
 
 	// 상수 버퍼 생성하여 정점 쉐이더 상수 버퍼에 접근 할 수 있도록 함
-	hr = pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer);
+	hr = pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pConstantBuffer);
 	if (FAILED(hr))
 	{
 		return false;
@@ -182,6 +182,9 @@ bool ColorShader::Render(ID3D11DeviceContext* pContext, int IndexCount, Matrix W
 		return false;
 	}
 
+	// 쉐이더를 이용해 준비된 버퍼를 렌더링
+	RenderShader(pContext, IndexCount);
+
 	return true;
 }
 
@@ -190,7 +193,7 @@ bool ColorShader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 
 	// 정점 입력 레이아웃 설정
 	pContext->IASetInputLayout(m_pLayOut);
-
+	 
 	// 삼각형을 그릴 정점 쉐이더와 픽셀 쉐이더 설정
 	pContext->VSSetShader(m_pVertexShader, NULL, 0);
 	pContext->PSSetShader(m_pPixelShader, NULL, 0);
@@ -214,7 +217,7 @@ bool ColorShader::SetShaderParameters(ID3D11DeviceContext* pContext, Matrix Worl
 	Proj = Proj.Transpose();
 
 	// 상수 버퍼의 내용을 쓸 수 있도록 잠금
-	hr = pContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+	hr = pContext->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
 	if (FAILED(hr))
 	{
 		return false;
@@ -229,15 +232,17 @@ bool ColorShader::SetShaderParameters(ID3D11DeviceContext* pContext, Matrix Worl
 		pData->view = View;
 		pData->Projection = Proj;
 	}
+
+
 	// 상수버퍼 잠금 해제
-	pContext->Unmap(m_pMatrixBuffer, 0);
+	pContext->Unmap(m_pConstantBuffer, 0);
 
 	// 정점 쉐이더에서의 상수 버퍼의 위치 설정
 	BufferNumber = 0;
 
 	// 정점 쉐이더의 상수 버퍼를 바뀐 값으로 설정
-	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pMatrixBuffer);
-
+	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
+	pContext->PSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
 
 	return true;
 }
@@ -252,10 +257,10 @@ bool ColorShader::Release()
 bool ColorShader::ReleaseShader()
 {
 	// 상수 버퍼 해제
-	if (m_pMatrixBuffer)
+	if (m_pConstantBuffer)
 	{
-		m_pMatrixBuffer->Release();
-		m_pMatrixBuffer = 0;
+		m_pConstantBuffer->Release();
+		m_pConstantBuffer = 0;
 	}
 
 	// 레이아웃 해제
@@ -287,7 +292,7 @@ ColorShader::ColorShader()
 	m_pVertexShader = nullptr;
 	m_pPixelShader = nullptr;
 	m_pLayOut = nullptr;
-	m_pMatrixBuffer = nullptr;
+	m_pConstantBuffer = nullptr;
 }
 
 ColorShader::~ColorShader()

@@ -59,9 +59,9 @@ public:
 	Matrix CreateOrthoMatrix(float Width, float Height, float fNear, float fFar);
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
-	void GetProjectionMatrix(Matrix ProjMatrix);
-	void GetWorldMatrix(Matrix matWorld);
-	void GetOrthoMatrix(Matrix OrthoMatrix);
+	Matrix GetProjectionMatrix(Matrix ProjMatrix);
+	Matrix GetWorldMatrix(Matrix matWorld);
+	Matrix GetOrthoMatrix(Matrix OrthoMatrix);
 	void GetVideoCardInfo(char* cardName, int& memory);
 
 public:

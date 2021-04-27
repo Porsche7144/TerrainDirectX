@@ -110,15 +110,15 @@ bool Graphics::Render()
 	Matrix worldMatrix, viewMatrix, ProjMatrix;
 
 	// 씬 그리기 전에 버퍼 초기화
-	m_D3d->PreRender(0.3f, 0.3f, 0.3f, 1.0f);
+	m_D3d->PreRender(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// 카메라 위치를 기준으로 뷰 행렬 생성
 	m_pCamera->Render();
 
 	// 월드, 뷰, 투영 행렬을 얻어온다.
-	m_pCamera->GetViewMatrix(viewMatrix);
-	m_D3d->GetWorldMatrix(worldMatrix);
-	m_D3d->GetProjectionMatrix(ProjMatrix);
+	viewMatrix = m_pCamera->GetViewMatrix(viewMatrix);
+	worldMatrix = m_D3d->GetWorldMatrix(worldMatrix);
+	ProjMatrix = m_D3d->GetProjectionMatrix(ProjMatrix);
 
 	// 모델 정점과 인덱스 버퍼를 그래픽 파이프라인에 보내 렌더링
 	m_pModel->Render(m_D3d->GetDeviceContext());

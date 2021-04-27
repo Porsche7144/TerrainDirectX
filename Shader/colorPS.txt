@@ -1,15 +1,16 @@
 // HLSL PixelShader
 
-struct PixelInputType
+struct VS_OUTPUT
 {
 	float4 pos : SV_POSITION;
-	float4 color : COLOR;
-}
+    float4 color : COLOR0;
+};
 
 //////////////////////////////////////////////
-// «»ºø Ω¶¿Ã¥ı
+//				«»ºø Ω¶¿Ã¥ı                 //
+//////////////////////////////////////////////
 
-float4 ColorPixelShader(PixelInputType input) : SV_TARGET
+float4 ColorPixelShader(VS_OUTPUT input) : SV_TARGET
 {
 	return input.color;
 }

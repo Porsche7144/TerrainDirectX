@@ -24,10 +24,10 @@ Vector3 Camera::GetRotation()
 	return m_Rotation;
 }
 
-void Camera::GetViewMatrix(Matrix View)
+Matrix Camera::GetViewMatrix(Matrix View)
 {
 	View = m_matView;
-	return;
+	return View;
 }
 
 bool Camera::Init()
@@ -69,7 +69,7 @@ bool Camera::Render()
 	lookAt = pos + lookAt;
 
 	// 뷰 매트릭스 생성
-	m_matView.CreateLookAt(pos, lookAt, up);
+	m_matView = m_matView.CreateLookAt(pos, lookAt, up);
 
 
 	return true;

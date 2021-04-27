@@ -7,34 +7,35 @@ cbuffer MatrixBuffer
 	matrix projMatrix;
 };
 
-
-struct VertexInputType
+struct VS_INPUT
 {
-	float4 pos : POSITION;
-	float4 color : COLOR;
+	float3 pos : POSITION;
+    float4 color : COLOR;
 };
 
-struct PixelInputType
+struct VS_OUTPUT
 {
 	float4 pos : SV_POSITION;
-	float4 color : COLOR;
+    float4 color : COLOR0;
 };
 
-///////////////////////////////////////
-// 버텍스 쉐이더
+//////////////////////////////////////////////
+//				버텍스 쉐이더               //
+//////////////////////////////////////////////
 
-PixelInputType ColorVertexShader(VertexInputType input)
+VS_OUTPUT ColorVertexShader(VS_INPUT input)
 {
-	PixelInputType output;
+	VS_OUTPUT output;
 
 	// 행렬 계산을 위해 position벡터를 w까지 가지는 Vector4로 사용
-	input.position.w = 1.0f;
+
+	float4 a = float4(input.pos, 1.0f);
 
 	// 월드, 뷰, 투영 행렬에 대한 정점의 위치를 계산
 	// 월드, 뷰, 투영 순서로 계산
-	output.position = mul(input.position, worldMatrix);
-	output.position = mul(input.position, viewMatrix);
-	output.position = mul(input.position, projMatrix);
+	a = mul(a, worldMatrix);
+	a = mul(a, viewMatrix);
+	output.pos = mul(a, projMatrix);
 
 	// 픽셀 쉐이더가 사용할 색상 전달
 	output.color = input.color;
