@@ -221,6 +221,7 @@ bool Shader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 	pContext->PSSetShader(m_pPixelShader, NULL, 0);
 
 	// ÇÈ¼¿ ½¦ÀÌ´õ¿¡¼­ »ùÇÃ·¯ »óÅÂ ¼³Á¤
+	// pContext->VSSetSamplers(0, 1, &m_pSamplerState);
 	pContext->PSSetSamplers(0, 1, &m_pSamplerState);
 
 	// »ï°¢Çü ·»´õ¸µ

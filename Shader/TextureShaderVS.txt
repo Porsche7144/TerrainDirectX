@@ -36,7 +36,7 @@ VS_OUTPUT VS_VertexShader(VS_INPUT input)
 	output.pos = mul(output.pos, viewMatrix);
 	output.pos = mul(output.pos, projMatrix);
 
-	// ÇÈ¼¿ ½¦ÀÌ´õ°¡ »ç¿ëÇÒ »ö»ó Àü´Þ
+	// ÇÈ¼¿ ½¦ÀÌ´õÀÇ ÅØ½ºÃ³ ÁÂÇ¥ ÀúÀå
 	output.tex = input.tex;
 
 	return output;
