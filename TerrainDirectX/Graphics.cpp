@@ -26,7 +26,7 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 	// 카메라 위치 세팅
-	m_pCamera->SetPosition(Vector3(0.0f, 0.0f, -10.0f));
+	m_pCamera->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
 
 	// 모델 클래스 생성
 	m_pModel = new Model;
@@ -35,7 +35,7 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 	// 모델 클래스 초기화
-	Result = m_pModel->Init(m_D3d->GetDevice());
+	Result = m_pModel->Init(m_D3d->GetDevice(), m_D3d->GetDeviceContext(), "../Image/stone01.tga");
 	if (!Result)
 	{
 		MessageBox(hwnd, L"Model 오브젝트 클래스 초기화 실패", L"Init Error", MB_OK);
@@ -43,13 +43,13 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 	}
 
 	// 쉐이더 클래스 생성
-	m_pColorShader = new ColorShader;
-	if (!m_pColorShader)
+	m_pShader = new Shader;
+	if (!m_pShader)
 	{
 		return false;
 	}
 	// 쉐이더 클래스 초기화
-	Result = m_pColorShader->Init(m_D3d->GetDevice(), hwnd);
+	Result = m_pShader->Init(m_D3d->GetDevice(), hwnd);
 	if (!Result)
 	{
 		MessageBox(hwnd, L"Shader 클래스 초기화 실패", L"Init Error", MB_OK);
@@ -80,11 +80,11 @@ bool Graphics::Release()
 		delete m_pModel;
 		m_pModel = NULL;
 	}
-	if (m_pColorShader)
+	if (m_pShader)
 	{
-		m_pColorShader->Release();
-		delete m_pColorShader;
-		m_pColorShader = NULL;
+		m_pShader->Release();
+		delete m_pShader;
+		m_pShader = NULL;
 	}
 
 	return true;
@@ -124,7 +124,7 @@ bool Graphics::Render()
 	m_pModel->Render(m_D3d->GetDeviceContext());
 
 	// 쉐이더를 사용해 모델 렌더링
-	result = m_pColorShader->Render(m_D3d->GetDeviceContext(), m_pModel->GetIndexCount(), worldMatrix, viewMatrix, ProjMatrix);
+	result = m_pShader->Render(m_D3d->GetDeviceContext(),m_pModel->GetTexture() ,m_pModel->GetIndexCount(), worldMatrix, viewMatrix, ProjMatrix);
 	if (!result)
 	{
 		return false;

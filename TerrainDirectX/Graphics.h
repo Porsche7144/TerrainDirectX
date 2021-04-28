@@ -9,7 +9,8 @@
 #include <d3dcompiler.h>
 #include "Model.h"
 #include "Camera.h"
-#include "ColorShader.h"
+#include "Shader.h"
+#include "Texture.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = false;
@@ -22,7 +23,8 @@ public:
 	D3dClass* m_D3d;
 	Camera* m_pCamera;
 	Model* m_pModel;
-	ColorShader* m_pColorShader;
+	Shader* m_pShader;
+	Texture* m_pTexture;
 
 
 public:
@@ -37,7 +39,7 @@ public:
 		m_D3d = nullptr;
 		m_pCamera = nullptr;
 		m_pModel = nullptr;
-		m_pColorShader = nullptr;
+		m_pShader = nullptr;
 	}
 	~Graphics()
 	{

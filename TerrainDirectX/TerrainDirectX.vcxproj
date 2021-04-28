@@ -133,22 +133,26 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ColorShader.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="D3dClass.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="systemclass.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="D3dClass.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="systemclass.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl" />
@@ -156,6 +160,8 @@
   <ItemGroup>
     <Text Include="..\Shader\colorPS.txt" />
     <Text Include="..\Shader\colorVS.txt" />
+    <Text Include="..\Shader\TextureShaderPS.txt" />
+    <Text Include="..\Shader\TextureShaderVS.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

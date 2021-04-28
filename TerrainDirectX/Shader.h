@@ -8,7 +8,7 @@ struct MatrixBufferType
 	Matrix Projection;
 };
 
-class ColorShader
+class Shader
 {
 public:
 	ID3D11VertexShader* m_pVertexShader;
@@ -19,7 +19,7 @@ public:
 
 public:
 	bool Init(ID3D11Device* pDevice, HWND hwnd);
-	bool Render(ID3D11DeviceContext* pContext, int IndexCount, Matrix World, Matrix View, Matrix Proj);
+	bool Render(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, int IndexCount, Matrix World, Matrix View, Matrix Proj);
 	bool Release();
 
 	bool InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const WCHAR* ps);
@@ -27,10 +27,10 @@ public:
 	bool ReleaseShader();
 
 	void OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, const WCHAR* filename);
-	bool SetShaderParameters(ID3D11DeviceContext* pContext, Matrix World, Matrix View, Matrix Proj);
+	bool SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, Matrix World, Matrix View, Matrix Proj);
 
 public:
-	ColorShader();
-	~ColorShader();
+	Shader();
+	~Shader();
 };
 

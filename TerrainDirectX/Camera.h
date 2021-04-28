@@ -1,5 +1,5 @@
 #pragma once
-#include "Model.h"
+#include "D3dClass.h"
 
 class Camera
 {

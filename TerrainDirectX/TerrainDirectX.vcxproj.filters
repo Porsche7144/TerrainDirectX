@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Before">
+      <UniqueIdentifier>{c45d1438-dee2-42cc-9638-fa3d5971431e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -30,14 +33,20 @@
     <ClCompile Include="D3dClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ColorShader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>Before</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,14 +65,20 @@
     <ClInclude Include="SimpleMath.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ColorShader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>Before</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +87,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Shader\colorPS.txt" />
-    <Text Include="..\Shader\colorVS.txt" />
+    <Text Include="..\Shader\colorVS.txt">
+      <Filter>Before</Filter>
+    </Text>
+    <Text Include="..\Shader\colorPS.txt">
+      <Filter>Before</Filter>
+    </Text>
+    <Text Include="..\Shader\TextureShaderPS.txt" />
+    <Text Include="..\Shader\TextureShaderVS.txt" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@ Model::Model()
 {
 	m_pVertexBuffer = nullptr;
 	m_pIndexBuffer = nullptr;
+	m_pTextureClass = nullptr;
 }
 
 // 모델의 인덱스 개수를 알려주는 함수
@@ -12,12 +13,42 @@ int Model::GetIndexCount()
 	return m_iIndexCount;
 }
 
-bool Model::Init(ID3D11Device* pDevice)
+ID3D11ShaderResourceView* Model::GetTexture()
+{
+	return m_pTextureClass->GetTexture();
+}
+
+bool Model::LoadTexture(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const string Filename)
+{
+	// 텍스쳐 오브젝트 생성
+	m_pTextureClass = new Texture;
+	if (!m_pTextureClass)
+	{
+		return false;
+	}
+
+	// 텍스쳐 오브젝트 초기화
+
+	if (!m_pTextureClass->Init(pDevice, pContext, Filename))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool Model::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const string Filename)
 {
 	bool result;
 
 	// 정점버퍼와 인덱스버퍼 초기화
 	result = InitBuffers(pDevice);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = LoadTexture(pDevice, pContext, Filename);
 	if (!result)
 	{
 		return false;
@@ -35,10 +66,10 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 	D3D11_SUBRESOURCE_DATA VertexData, IndexData;
 
 	// 정점 배열의 크기 설정
-	m_iVertexCount = 3;
+	m_iVertexCount = 4;
 	
 	// 인덱스 배열의 크기 설정
-	m_iIndexCount = 3;
+	m_iIndexCount = 6;
 
 	// 버텍스 생성
 	vertices = new VertexType[m_iVertexCount];
@@ -60,19 +91,26 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 
 	// 정점 배열에 값 저장
 	vertices[0].pos = Vector3(-1.0f, -1.0f, 0.0f); // 왼쪽 아래
-	vertices[0].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].TextureUV = Vector2(0.0f, 1.0f);
 
-	vertices[1].pos = Vector3(0.0f, 1.0f, 0.0f); // 위
-	vertices[1].color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].pos = Vector3(-1.0f, 1.0f, 0.0f); // 위 왼쪽
+	vertices[1].TextureUV = Vector2(0.0f, 0.0f);
 
-	vertices[2].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 아래
-	vertices[2].color = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+	vertices[2].pos = Vector3(1.0f, 1.0f, 0.0f); // 오른쪽 위
+	vertices[2].TextureUV = Vector2(1.0f, 0.0f);
+
+	vertices[3].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 아래
+	vertices[3].TextureUV = Vector2(1.0f, 1.0f);
 
 
 	// 인덱스 배열에 값 저장
 	indices[0] = 0; // 왼쪽 아래
 	indices[1] = 1; // 위
 	indices[2] = 2; // 오른쪽 아래
+
+	indices[3] = 0; // 위 왼쪽
+	indices[4] = 2; // 위 오른쪽
+	indices[5] = 3; // 오른쪽 아래
 
 	// 정점버퍼 구조체 초기화
 	ZeroMemory(&VertexBufferDesc, sizeof(VertexBufferDesc));
@@ -159,8 +197,23 @@ bool Model::RenderBuffer(ID3D11DeviceContext* pContext)
 
 bool Model::Release()
 {
+
+	ReleaseTexture();
+
 	// 정점버퍼와 인덱스버퍼 해제
 	ReleaseBuffer();
+
+	return true;
+}
+
+bool Model::ReleaseTexture()
+{
+	if (m_pTextureClass)
+	{
+		m_pTextureClass->Release();
+		delete m_pTextureClass;
+		m_pTextureClass = 0;
+	}
 
 	return true;
 }

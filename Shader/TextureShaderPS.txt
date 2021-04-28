@@ -1,9 +1,12 @@
 // HLSL PixelShader
 
+Texture2D shaderTexture;
+SamplerState SampleType;
+
 struct VS_OUTPUT
 {
 	float4 pos : SV_POSITION;
-    float4 color : COLOR0;
+    float2 tex : TEXCOORD0;
 };
 
 //////////////////////////////////////////////
@@ -12,7 +15,8 @@ struct VS_OUTPUT
 
 float4 PS_PixelShader(VS_OUTPUT input) : SV_TARGET
 {
-	// input.color = input.color * 0.5f;
+	float4 textureColor;
+	textureColor = shaderTexture.Sample(SampleType, input.tex);
 
-	return input.color;
+	return textureColor;
 }

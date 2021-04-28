@@ -12,6 +12,7 @@
 #include "SimpleMath.h"
 #include <wrl.h>
 #include <fstream>
+#include <string>
 
 #define DirectX_PI ((float)  3.141592654f)
 
@@ -29,6 +30,7 @@ using namespace Microsoft;
 using namespace WRL;
 using namespace DirectX;
 using namespace SimpleMath;
+using namespace std;
 
 class D3dClass
 {
