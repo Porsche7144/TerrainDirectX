@@ -53,9 +53,9 @@ bool Camera::Render()
 	// 오일러 각
 	// 카메라의 회전과 카메라 전환에 사용
 	// Yaw(y), Pitch(x), Roll(z) 회전을 라디안값으로 Convert
-	pitch = ConvertToRadians(m_Position.x);
-	yaw = ConvertToRadians(m_Position.y);
-	roll = ConvertToRadians(m_Position.z);
+	pitch = ConvertToRadians(m_Rotation.x);
+	yaw = ConvertToRadians(m_Rotation.y);
+	roll = ConvertToRadians(m_Rotation.z);
 
 	// Yaw(y), Pitch(x), Roll(z) 행렬 생성
 	matRotation = Matrix::CreateFromYawPitchRoll(yaw, pitch, roll);

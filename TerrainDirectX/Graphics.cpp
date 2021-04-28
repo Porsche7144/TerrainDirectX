@@ -61,7 +61,7 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 
 bool Graphics::Release()
 {
-	// m_D3d °´Ã¼ ¹ÝÈ¯
+	// °´Ã¼ ¹ÝÈ¯
 	if (m_D3d)
 	{
 		m_D3d->Release();

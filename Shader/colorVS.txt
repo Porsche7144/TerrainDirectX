@@ -9,7 +9,7 @@ cbuffer MatrixBuffer
 
 struct VS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
     float4 color : COLOR;
 };
 
@@ -28,14 +28,13 @@ VS_OUTPUT ColorVertexShader(VS_INPUT input)
 	VS_OUTPUT output;
 
 	// 행렬 계산을 위해 position벡터를 w까지 가지는 Vector4로 사용
-
-	float4 a = float4(input.pos, 1.0f);
+	input.pos.w = 1.0f;
 
 	// 월드, 뷰, 투영 행렬에 대한 정점의 위치를 계산
 	// 월드, 뷰, 투영 순서로 계산
-	a = mul(a, worldMatrix);
-	a = mul(a, viewMatrix);
-	output.pos = mul(a, projMatrix);
+	output.pos = mul(input.pos, worldMatrix);
+	output.pos = mul(output.pos, viewMatrix);
+	output.pos = mul(output.pos, projMatrix);
 
 	// 픽셀 쉐이더가 사용할 색상 전달
 	output.color = input.color;
