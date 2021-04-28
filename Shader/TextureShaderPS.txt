@@ -3,9 +3,10 @@
 Texture2D shaderTexture;
 SamplerState SampleType;
 
-struct VS_OUTPUT
+struct PS_INPUT
 {
 	float4 pos : SV_POSITION;
+	float4 color : COLOR0;
     float2 tex : TEXCOORD0;
 };
 
@@ -13,10 +14,15 @@ struct VS_OUTPUT
 //				«»ºø Ω¶¿Ã¥ı                 //
 //////////////////////////////////////////////
 
-float4 PS_PixelShader(VS_OUTPUT input) : SV_TARGET
+float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 {
+	// VS_OUTPUT vOut;
+
 	float4 textureColor;
 	textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+	// vOut.color = textureColor * input.color;
+
 
 	return textureColor;
 }

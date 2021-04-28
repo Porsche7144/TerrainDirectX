@@ -121,6 +121,7 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 	const D3D11_INPUT_ELEMENT_DESC PolygonLayOut[] = 
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		// { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
@@ -168,8 +169,11 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 
 	// 텍스쳐 샘플러 상태 구조체 설정
 	D3D11_SAMPLER_DESC SamplerDesc;
-	// 필터링 방식
+
+	// Filter 필터링 방식
+	// 최종 도형 표면에서 텍스쳐의 어느 픽셀이 사용되거나 혼합될 것인지 결정
 	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
 	// 텍스쳐 주소 지정방식
 	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -270,7 +274,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderReso
 	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
 
 	// 픽셀 쉐이더에서 쉐이더 텍스쳐 리소스 설정
-	pContext->PSSetShaderResources(BufferNumber, 1, &texture);
+	pContext->PSSetShaderResources(0, 1, &texture);
 
 	return true;
 }

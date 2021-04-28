@@ -16,16 +16,16 @@ bool Texture::LoadTexture(const string filename)
 
 	// 파일 헤더를 읽어온다
 	TargaHeader targa;
-	UINT count = fread(&targa, sizeof(TargaHeader), 1, filePtr);
+	UINT count = (UINT)fread(&targa, sizeof(TargaHeader), 1, filePtr);
 	if (count != 1)
 	{
 		return false;
 	}
 
 	// 파일 헤더에서 중요정보를 얻어온다
-	height = targa.height;
-	width = targa.width;
-	int bpp = targa.bpp;
+	TextureHeight = (int)targa.height;
+	TextureWidth = (int)targa.width;
+	int bpp = (int)targa.bpp;
 
 	// 파일이 32비트인지 24비트인지 체크
 	// 32비트일 경우만 사용한다
@@ -35,10 +35,10 @@ bool Texture::LoadTexture(const string filename)
 	}
 
 	// 32비트 이미지 데이터의 크기 계산
-	int ImageSize = width * height * 4;
+	int ImageSize = TextureWidth * TextureHeight * 4;
 
 	// targa 이미지 데이터용 메모리 할당
-	UCHAR* targaImage = new UCHAR[ImageSize];
+	string* targaImage = new string[ImageSize];
 	if (!targaImage)
 	{
 		return false;
@@ -58,7 +58,7 @@ bool Texture::LoadTexture(const string filename)
 	}
 
 	// targa 이미지 데이터에 인덱스 초기화
-	m_TextureData = new UCHAR[ImageSize];
+	m_TextureData = new string[ImageSize];
 	if (!m_TextureData)
 	{
 		return false;
@@ -68,13 +68,13 @@ bool Texture::LoadTexture(const string filename)
 	int index = 0;
 
 	// targa 이미지 데이터에 인덱스 초기화
-	int k = (width * height * 4) - (width * 4);
+	int k = (TextureWidth * TextureHeight * 4) - (TextureWidth * 4);
 
 	// targa 형식이 거꾸로 저장되어있으므로 바른 순서로 targa 이미지 데이터를
 	// targa 대상 배열에 복사
-	for (int j = 0; j < height; j++)
+	for (int j = 0; j < TextureHeight; j++)
 	{
-		for (int i = 0; i < width; i++)
+		for (int i = 0; i < TextureWidth; i++)
 		{
 			m_TextureData[index + 0] = targaImage[k + 2]; // 빨강
 			m_TextureData[index + 1] = targaImage[k + 1]; // 녹색
@@ -87,7 +87,7 @@ bool Texture::LoadTexture(const string filename)
 		}
 
 		// targa 이미지 데이터 인덱스를 역순으로 읽은 후 열의 시작 부분에서 이전 행으로 다시 설정
-		k -= (width * 8);
+		k -= (TextureWidth * 8);
 	}
 
 	// 대상 배열에 복사 된 targa 이미지 데이터 해제
@@ -103,7 +103,7 @@ bool Texture::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const s
 
 	HRESULT hr;
 
-	if (!LoadTexture(filename.c_str()))
+	if (!LoadTexture(filename))
 	{
 		return false;
 	}
@@ -112,9 +112,9 @@ bool Texture::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const s
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	textureDesc.Width = width;
-	textureDesc.Height = height;
-	textureDesc.MipLevels = 1;
+	textureDesc.Width = TextureWidth;
+	textureDesc.Height = TextureHeight;
+	textureDesc.MipLevels = 0;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureDesc.SampleDesc.Count = 1;
@@ -132,17 +132,21 @@ bool Texture::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const s
 	}
 
 	// targa 이미지 데이터의 너비 사이즈 설정
-	UINT rowPitch = (width * 4) * sizeof(UCHAR);
+	UINT rowPitch = (TextureWidth * 4) * sizeof(string);
 
 	// targa 이미지 데이터를 텍스쳐에 복사
 	pContext->UpdateSubresource(m_pTexture, 0, NULL, m_TextureData, rowPitch, 0);
 
-	// 쉐이더 리소스 뷰 구조체 설정
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	// 쉐이더 리소스 뷰 구조체 초기화
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+
+	// 쉐이더 리소스 뷰 구조체 설정
 	srvDesc.Format = textureDesc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = -1;
 
 	// 텍스쳐의 쉐이더 리소스 뷰 생성
 	hr = pDevice->CreateShaderResourceView(m_pTexture, &srvDesc, &m_TextureSRV);

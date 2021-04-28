@@ -10,12 +10,14 @@ cbuffer MatrixBuffer
 struct VS_INPUT
 {
 	float4 pos : POSITION;
+	//float4 color : COLOR;
     float2 tex : TEXTURE;
 };
 
 struct VS_OUTPUT
 {
 	float4 pos : SV_POSITION;
+	//float4 color : COLOR0;
     float2 tex : TEXCOORD0;
 };
 
@@ -35,6 +37,9 @@ VS_OUTPUT VS_VertexShader(VS_INPUT input)
 	output.pos = mul(input.pos, worldMatrix);
 	output.pos = mul(output.pos, viewMatrix);
 	output.pos = mul(output.pos, projMatrix);
+
+	// ÇÈ¼¿ ½¦ÀÌ´õ°¡ »ç¿ëÇÒ »ö»ó Àü´Þ
+	// output.color = input.color;
 
 	// ÇÈ¼¿ ½¦ÀÌ´õÀÇ ÅØ½ºÃ³ ÁÂÇ¥ ÀúÀå
 	output.tex = input.tex;

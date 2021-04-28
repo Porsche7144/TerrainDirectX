@@ -13,15 +13,15 @@ struct TargaHeader
 class Texture
 {
 public:
-	int width = 0;
-	int height = 0;
+	int TextureWidth = 0;
+	int TextureHeight = 0;
 
-	UCHAR* m_TextureData;
+	string* m_TextureData;
 	ID3D11Texture2D* m_pTexture;
 	ID3D11ShaderResourceView* m_TextureSRV;
 
 public:
-	bool Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const std::string filename);
+	bool Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const string filename);
 	bool Release();
 	bool LoadTexture(const string filename);
 	ID3D11ShaderResourceView* GetTexture();

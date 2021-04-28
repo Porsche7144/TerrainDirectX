@@ -90,17 +90,21 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 	// 바라본다고 판단해 Backface Culling에 의해 그려지지 않게됨.
 
 	// 정점 배열에 값 저장
-	vertices[0].pos = Vector3(-1.0f, 1.0f, 0.0f); // 왼쪽 아래
-	vertices[0].TextureUV = Vector2(0.0f, 0.0f);
+	vertices[0].pos = Vector3(-1.0f, -1.0f, 0.0f); // 왼쪽 아래
+	vertices[0].TextureUV = Vector2(0.0f, 1.0f);
+	vertices[0].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	vertices[1].pos = Vector3(1.0f, 1.0f, 0.0f); // 위 왼쪽
-	vertices[1].TextureUV = Vector2(1.0f, 0.0f);
+	vertices[1].pos = Vector3(-1.0f, 1.0f, 0.0f); // 위 왼쪽
+	vertices[1].TextureUV = Vector2(0.0f, 0.0f);
+	vertices[1].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	vertices[2].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 위
-	vertices[2].TextureUV = Vector2(1.0f, 1.0f);
+	vertices[2].pos = Vector3(1.0f, 1.0f, 0.0f); // 오른쪽 위
+	vertices[2].TextureUV = Vector2(1.0f, 0.0f);
+	vertices[2].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
-	vertices[3].pos = Vector3(-1.0f, -1.0f, 0.0f); // 오른쪽 아래
-	vertices[3].TextureUV = Vector2(0.0f, 1.0f);
+	vertices[3].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 아래
+	vertices[3].TextureUV = Vector2(1.0f, 1.0f);
+	vertices[3].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 
 	// 인덱스 배열에 값 저장
@@ -134,6 +138,9 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 	{
 		return false;
 	}
+
+	// 인덱스버퍼 구조체 초기화
+	ZeroMemory(&IndexBufferDesc, sizeof(IndexBufferDesc));
 
 	// 인덱스 버퍼의 구조체 설정
 	IndexBufferDesc.ByteWidth = sizeof(ULONG) * m_iIndexCount;
