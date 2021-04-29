@@ -10,7 +10,7 @@ struct VertexType
 	// 레이아웃 순서에 영향을 주는 것 같다...
 	Vector3 pos;
 	Vector2 TextureUV;
-	Vector4 color;
+	Vector3 normal;
 };
 
 class Model

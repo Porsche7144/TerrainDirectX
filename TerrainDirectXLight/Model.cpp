@@ -92,19 +92,19 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 	// 정점 배열에 값 저장
 	vertices[0].pos = Vector3(-1.0f, -1.0f, 0.0f); // 왼쪽 아래
 	vertices[0].TextureUV = Vector2(0.0f, 1.0f);
-	// vertices[0].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].normal = Vector3(0.0f, 0.0f, -1.0f);
 
 	vertices[1].pos = Vector3(-1.0f, 1.0f, 0.0f); // 위 왼쪽
 	vertices[1].TextureUV = Vector2(0.0f, 0.0f);
-	// vertices[1].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[1].normal = Vector3(0.0f, 0.0f, -1.0f);
 
 	vertices[2].pos = Vector3(1.0f, 1.0f, 0.0f); // 오른쪽 위
 	vertices[2].TextureUV = Vector2(1.0f, 0.0f);
-	// vertices[2].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[2].normal = Vector3(0.0f, 0.0f, -1.0f);
 
 	vertices[3].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 아래
 	vertices[3].TextureUV = Vector2(1.0f, 1.0f);
-	// vertices[3].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[3].normal = Vector3(0.0f, 0.0f, -1.0f);
 
 
 	// 인덱스 배열에 값 저장

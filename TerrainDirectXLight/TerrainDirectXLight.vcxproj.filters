@@ -45,9 +45,6 @@
     <ClCompile Include="Texture.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ColorShader.cpp">
       <Filter>Before</Filter>
     </ClCompile>
@@ -56,6 +53,12 @@
     </ClCompile>
     <ClCompile Include="dxtk\WICTextureLoader.cpp">
       <Filter>dxtk</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +113,9 @@
     <ClInclude Include="dxtk\DDS.h">
       <Filter>dxtk</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -125,5 +131,7 @@
     </Text>
     <Text Include="..\Shader\TextureShaderPS.txt" />
     <Text Include="..\Shader\TextureShaderVS.txt" />
+    <Text Include="..\Shader\LightPS.txt" />
+    <Text Include="..\Shader\LightVS.txt" />
   </ItemGroup>
 </Project>

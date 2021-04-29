@@ -1,6 +1,6 @@
-#include "ColorShader.h"
+#include "Shader.h"
 
-void ColorShader::OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, const WCHAR* filename)
+void Shader::OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, const WCHAR* filename)
 {
 	char* compileError;
 	ULONG BufferSize, i;
@@ -8,7 +8,7 @@ void ColorShader::OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, co
 
 	// 에러 메세지를 담고 있는 문자열 버퍼 포인터를 가져옴
 	compileError = (char*)ErrorMessage->GetBufferPointer();
-
+	
 	// 메세지 길이
 	BufferSize = ErrorMessage->GetBufferSize();
 
@@ -33,10 +33,10 @@ void ColorShader::OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, co
 
 }
 
-bool ColorShader::Init(ID3D11Device* pDevice, HWND hwnd)
+bool Shader::Init(ID3D11Device* pDevice, HWND hwnd)
 {
 	// 버텍스 쉐이더와 픽셀 쉐이더 초기화
-	if (!InitShader(pDevice, hwnd, L"../Shader/colorVS.txt", L"../Shader/colorPS.txt"))
+	if(!InitShader(pDevice, hwnd, L"../Shader/LightVS.txt", L"../Shader/LightPS.txt"))
 	{
 		return false;
 	}
@@ -44,16 +44,17 @@ bool ColorShader::Init(ID3D11Device* pDevice, HWND hwnd)
 	return true;
 }
 
-bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const WCHAR* ps)
+bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const WCHAR* ps)
 {
 	HRESULT hr;
 	ID3DBlob* errorMessage = nullptr;
-
+	
 	// 쉐이더 파일을 불러와 DirectX와 GPU에서 사용 가능하도록 작업.
 	ID3DBlob* VertexShaderBuffer = nullptr;
 	ID3DBlob* PixelShaderBuffer = nullptr;
 	UINT numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC lightBufferDesc;
 
 
 	// 버텍스 쉐이더 컴파일
@@ -90,16 +91,16 @@ bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, 
 	}
 
 	// 버퍼로부터 버텍스 쉐이더 생성
-	hr = pDevice->CreateVertexShader(VertexShaderBuffer->GetBufferPointer(), VertexShaderBuffer->GetBufferSize(),
-		NULL, &m_pVertexShader);
+	hr = pDevice->CreateVertexShader(VertexShaderBuffer->GetBufferPointer(), VertexShaderBuffer->GetBufferSize(), 
+									 NULL, &m_pVertexShader);
 	if (FAILED(hr))
 	{
 		return false;
 	}
 
 	// 버퍼로부터 픽셀 쉐이더 생성
-	hr = pDevice->CreatePixelShader(PixelShaderBuffer->GetBufferPointer(), PixelShaderBuffer->GetBufferSize(),
-		NULL, &m_pPixelShader);
+	hr = pDevice->CreatePixelShader(PixelShaderBuffer->GetBufferPointer(), PixelShaderBuffer->GetBufferSize(), 
+									NULL, &m_pPixelShader);
 	if (FAILED(hr))
 	{
 		return false;
@@ -118,18 +119,21 @@ bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, 
 	//									사용해 자동으로 알아낼 수 있음.
 	// D3D11_INPUT_CLASSIFICATION InputSlotClass;
 	// UINT InstanceDataStepRate;
-	const D3D11_INPUT_ELEMENT_DESC PolygonLayOut[] =
+	const D3D11_INPUT_ELEMENT_DESC PolygonLayOut[] = 
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXTURE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+		// 노말벡터의 x,y,z 변수를 담을 수 있는 DXGI_FORMAT_R32G32B32_FLOAT로 설정
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	// 레이아웃 요소의 개수
-	numElements = sizeof(PolygonLayOut) / sizeof(PolygonLayOut[1]);
+	numElements = sizeof(PolygonLayOut) / sizeof(PolygonLayOut[0]);
 
 	// 정점 레이아웃 생성
-	hr = pDevice->CreateInputLayout(PolygonLayOut, numElements, VertexShaderBuffer->GetBufferPointer(),
-		VertexShaderBuffer->GetBufferSize(), &m_pLayOut);
+	hr = pDevice->CreateInputLayout(PolygonLayOut, numElements, VertexShaderBuffer->GetBufferPointer(), 
+									VertexShaderBuffer->GetBufferSize(), &m_pLayOut);
 	if (FAILED(hr))
 	{
 		return false;
@@ -165,15 +169,63 @@ bool ColorShader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, 
 		return false;
 	}
 
+	// 라이트 상수버퍼 세팅
+	// 상수 버퍼의 크기가 16의 배수인지 주의해야한다.
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	// 라이트 상수 버퍼 생성하여 정점 쉐이더 상수 버퍼에 접근 할 수 있도록 함
+	hr = pDevice->CreateBuffer(&lightBufferDesc, NULL, &m_pLightConstantBuffer);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+
+
+	// 텍스쳐 샘플러 상태 구조체 설정
+	D3D11_SAMPLER_DESC SamplerDesc;
+
+	// Filter 필터링 방식
+	// 최종 도형 표면에서 텍스쳐의 어느 픽셀이 사용되거나 혼합될 것인지 결정
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+	// 텍스쳐 주소 지정방식
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = 0.0f;
+	SamplerDesc.MaxAnisotropy = 16;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	SamplerDesc.BorderColor[0] = 1.0f;
+	SamplerDesc.BorderColor[1] = 0;
+	SamplerDesc.BorderColor[2] = 0;
+	SamplerDesc.BorderColor[3] = 1.0f;
+	SamplerDesc.MinLOD = FLT_MIN;
+	SamplerDesc.MaxLOD = FLT_MAX;
+
+	// 텍스쳐 샘플러 스테이트 생성
+	hr = pDevice->CreateSamplerState(&SamplerDesc, &m_pSamplerState);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 
 	return true;
 }
 
-bool ColorShader::Render(ID3D11DeviceContext* pContext, int IndexCount, Matrix World, Matrix View, Matrix Proj)
+bool Shader::Render(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, int IndexCount, 
+					Matrix World, Matrix View, Matrix Proj,
+					Vector3 LightDir, Vector4 DiffuseColor)
 {
 
 	// 렌더링에 사용할 쉐이더 인자 입력
-	if (!SetShaderParameters(pContext, World, View, Proj))
+	if(!SetShaderParameters(pContext, texture, World, View, Proj, LightDir, DiffuseColor))
 	{
 		return false;
 	}
@@ -184,15 +236,19 @@ bool ColorShader::Render(ID3D11DeviceContext* pContext, int IndexCount, Matrix W
 	return true;
 }
 
-bool ColorShader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
+bool Shader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 {
 
 	// 정점 입력 레이아웃 설정
 	pContext->IASetInputLayout(m_pLayOut);
-
+	 
 	// 삼각형을 그릴 정점 쉐이더와 픽셀 쉐이더 설정
 	pContext->VSSetShader(m_pVertexShader, NULL, 0);
 	pContext->PSSetShader(m_pPixelShader, NULL, 0);
+
+	// 픽셀 쉐이더에서 샘플러 상태 설정
+	// pContext->VSSetSamplers(0, 1, &m_pSamplerState);
+	pContext->PSSetSamplers(0, 1, &m_pSamplerState);
 
 	// 삼각형 렌더링
 	pContext->DrawIndexed(IndexCount, 0, 0);
@@ -200,11 +256,14 @@ bool ColorShader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 	return true;
 }
 
-bool ColorShader::SetShaderParameters(ID3D11DeviceContext* pContext, Matrix World, Matrix View, Matrix Proj)
+bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture ,
+								Matrix World, Matrix View, Matrix Proj, 
+								Vector3 LightDir, Vector4 DiffuseColor)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	MatrixBufferType* pData;
+	LightBufferType* pLightData;
 	UINT BufferNumber;
 
 	// 행렬을 전치하여 쉐이더에서 사용 할 수 있게 함.
@@ -238,25 +297,70 @@ bool ColorShader::SetShaderParameters(ID3D11DeviceContext* pContext, Matrix Worl
 
 	// 정점 쉐이더의 상수 버퍼를 바뀐 값으로 설정
 	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
-	// pContext->PSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
+
+	// 픽셀 쉐이더에서 쉐이더 텍스쳐 리소스 설정
+	pContext->PSSetShaderResources(0, 1, &texture);
+
+
+	// 조명 상수버퍼 세팅
+	// Map함수로 버퍼에 Lock을 걸고 버퍼의 포인터를 얻어온다
+	hr = pContext->Map(m_pLightConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+	if(FAILED(hr))
+	{
+		return false;
+	}
+	else
+	{
+		pLightData = (LightBufferType*)MappedResource.pData;
+
+		// 버퍼에 라이트 색상과 방향 설정
+		pLightData->DiffuseColor = DiffuseColor;
+		pLightData->LightDirection = LightDir;
+		pLightData->Padding = 0.0f;
+	}
+
+	// 상수버퍼 잠금 해제
+	pContext->Unmap(m_pLightConstantBuffer, 0);
+
+	// 정점 쉐이더에서의 상수 버퍼의 위치 설정
+	BufferNumber = 0;
+
+	// 픽셀 쉐이더에 버퍼 설정
+	// 픽셀 쉐이더를 설정하는 것이기 때문에 PSSetConstantBuffer 함수 사용
+	pContext->PSSetConstantBuffers(BufferNumber, 1, &m_pLightConstantBuffer);
+
+
 
 	return true;
 }
 
-bool ColorShader::Release()
+bool Shader::Release()
 {
 	ReleaseShader();
 
 	return true;
 }
 
-bool ColorShader::ReleaseShader()
+bool Shader::ReleaseShader()
 {
+	// 텍스쳐 샘플러 해제
+	if (m_pSamplerState)
+	{
+		m_pSamplerState->Release();
+		m_pSamplerState = 0;
+	}
+
 	// 상수 버퍼 해제
 	if (m_pConstantBuffer)
 	{
 		m_pConstantBuffer->Release();
 		m_pConstantBuffer = 0;
+	}
+
+	if (m_pLightConstantBuffer)
+	{
+		m_pLightConstantBuffer->Release();
+		m_pLightConstantBuffer = 0;
 	}
 
 	// 레이아웃 해제
@@ -283,15 +387,17 @@ bool ColorShader::ReleaseShader()
 	return true;
 }
 
-ColorShader::ColorShader()
+Shader::Shader()
 {
 	m_pVertexShader = nullptr;
 	m_pPixelShader = nullptr;
 	m_pLayOut = nullptr;
 	m_pConstantBuffer = nullptr;
+	m_pSamplerState = nullptr;
+	m_pLightConstantBuffer = nullptr;
 }
 
-ColorShader::~ColorShader()
+Shader::~Shader()
 {
 
 }

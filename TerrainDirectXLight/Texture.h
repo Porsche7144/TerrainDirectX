@@ -24,7 +24,6 @@ public:
 public:
 	bool Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const TCHAR* filename);
 	bool Release();
-	 // bool LoadTexture(const TCHAR* filename);
 	ID3D11ShaderResourceView* GetTexture();
 
 public:

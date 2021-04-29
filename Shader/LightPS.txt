@@ -1,0 +1,48 @@
+// HLSL PixelShader
+
+Texture2D shaderTexture;
+SamplerState SampleType;
+
+cbuffer LightBuffer
+{
+	// 라이트의 색과 방향을 담는 용도
+	float4 DiffuseColor;
+	float3 LightDirection;
+	float Padding;
+}
+
+struct PS_INPUT
+{
+	float4 pos : SV_POSITION;
+    float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+};
+
+//////////////////////////////////////////////
+//				픽셀 쉐이더                 //
+//////////////////////////////////////////////
+
+float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
+{
+
+	float4 textureColor;
+	float3 LightDir;
+	float LightIntensity; // 빛의 조도
+	float4 color;
+
+	textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+	// 계산을 위해 조명의 방향을 반전시킴
+	LightDir = -LightDirection;
+
+	// 픽셀의 빛의 양을 계산.
+	// 조도 = 삼각형의 노말벡터와 라이트의 방향 벡터 내적값.
+	LightIntensity = saturate(dot(input.normal, LightDir));
+
+	// 계산된 빛의 세기를 텍스쳐 픽셀의 값과 조합해서 최종 색상을 만들어 낸다.
+	color = saturate(DiffuseColor * LightIntensity);
+	color = color * textureColor;
+
+
+	return color;
+}

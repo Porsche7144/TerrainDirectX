@@ -56,6 +56,16 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 
+	// 라이트 클래스 생성
+	m_pLight = new Light;
+	if (!m_pLight)
+	{
+		return false;
+	}
+	// 라이트 컬러, 방향 초기화
+	m_pLight->SetDiffuseColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	m_pLight->SetDirection(Vector3(-1.0f, 0.0f, 0.0f));
+
 	return true;
 }
 
@@ -86,6 +96,11 @@ bool Graphics::Release()
 		delete m_pShader;
 		m_pShader = NULL;
 	}
+	if (m_pLight)
+	{
+		delete m_pLight;
+		m_pLight = NULL;
+	}
 
 	return true;
 }
@@ -94,8 +109,18 @@ bool Graphics::Frame()
 {
 	bool result;
 
+	// 매 프라임마다 달라지는 회전정보를 저장하기 위해 static 변수 추가
+	static float rotation = 0.0f;
+
+	rotation += (float)DirectX_PI * 0.0001f;
+	if (rotation >= 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
+
 	// 렌더링 수행
-	result = Render();
+	result = Render(rotation);
 	if (!result)
 	{
 		return false;
@@ -104,7 +129,7 @@ bool Graphics::Frame()
 	return true;
 }
 
-bool Graphics::Render()
+bool Graphics::Render(float rotation)
 {
 	bool result;
 	Matrix worldMatrix, viewMatrix, ProjMatrix;
@@ -120,11 +145,16 @@ bool Graphics::Render()
 	worldMatrix = m_D3d->GetWorldMatrix(worldMatrix);
 	ProjMatrix = m_D3d->GetProjectionMatrix(ProjMatrix);
 
+	// 월드행렬을 회전값 만큼 회전시켜 삼각형을 렌더링 할 때 그 값만큼 회전되어 보이게 한다.
+	worldMatrix = worldMatrix.CreateRotationY(rotation);
+
 	// 모델 정점과 인덱스 버퍼를 그래픽 파이프라인에 보내 렌더링
 	m_pModel->Render(m_D3d->GetDeviceContext());
 
 	// 쉐이더를 사용해 모델 렌더링
-	result = m_pShader->Render(m_D3d->GetDeviceContext(),m_pModel->GetTexture() ,m_pModel->GetIndexCount(), worldMatrix, viewMatrix, ProjMatrix);
+	result = m_pShader->Render(m_D3d->GetDeviceContext(),m_pModel->GetTexture() ,m_pModel->GetIndexCount(), 
+								worldMatrix, viewMatrix, ProjMatrix, 
+								m_pLight->GetDirection(), m_pLight->GetDiffuseColor());
 	if (!result)
 	{
 		return false;

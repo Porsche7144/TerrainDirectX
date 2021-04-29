@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{12E25F18-E48A-47BB-B441-15809C575B18}</ProjectGuid>
-    <RootNamespace>TerrainDirectX</RootNamespace>
+    <ProjectGuid>{584e4c5c-99bc-407f-a396-25f96c100ad0}</ProjectGuid>
+    <RootNamespace>TerrainDirectXLight</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -74,7 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>../output/Debug</OutDir>
-    <IntDir>../output/Debug/TerrainDirectX</IntDir>
+    <IntDir>../output/Debug/TerrainDirectXLight</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -135,11 +135,12 @@
     <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="dxtk\DDSTextureLoader.cpp" />
     <ClCompile Include="dxtk\WICTextureLoader.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="D3dClass.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="WinMain.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="dxtk\pch.h" />
     <ClInclude Include="dxtk\PlatformHelpers.h" />
     <ClInclude Include="dxtk\WICTextureLoader.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="D3dClass.h" />
     <ClInclude Include="Graphics.h" />
@@ -169,6 +171,8 @@
   <ItemGroup>
     <Text Include="..\Shader\colorPS.txt" />
     <Text Include="..\Shader\colorVS.txt" />
+    <Text Include="..\Shader\LightPS.txt" />
+    <Text Include="..\Shader\LightVS.txt" />
     <Text Include="..\Shader\TextureShaderPS.txt" />
     <Text Include="..\Shader\TextureShaderVS.txt" />
   </ItemGroup>

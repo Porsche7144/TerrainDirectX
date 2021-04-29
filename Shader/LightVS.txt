@@ -1,0 +1,55 @@
+// HLSL
+
+// Shader 클래스의 MatrixBufferType 구조와 같아야함.
+cbuffer MatrixBuffer
+{
+	matrix worldMatrix;
+	matrix viewMatrix;
+	matrix projMatrix;
+};
+
+struct VS_INPUT
+{
+	float4 pos : POSITION;
+    float2 tex : TEXTURE;
+	float3 normal : NORMAL;
+};
+
+struct VS_OUTPUT
+{
+	float4 pos : SV_POSITION;
+    float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+};
+
+//////////////////////////////////////////////
+//				버텍스 쉐이더               //
+//////////////////////////////////////////////
+
+VS_OUTPUT VS_VertexShader(VS_INPUT input)
+{
+	VS_OUTPUT output;
+
+	// 행렬 계산을 위해 position벡터를 w까지 가지는 Vector4로 사용
+	input.pos.w = 1.0f;
+
+	// 월드, 뷰, 투영 행렬에 대한 정점의 위치를 계산
+	// 월드, 뷰, 투영 순서로 계산
+	output.pos = mul(input.pos, worldMatrix);
+	output.pos = mul(output.pos, viewMatrix);
+	output.pos = mul(output.pos, projMatrix);
+
+	// 픽셀 쉐이더가 사용할 색상 전달
+	// output.color = input.color;
+
+	// 픽셀 쉐이더의 텍스처 좌표 저장
+	output.tex = input.tex;
+
+	// 라이트 정점의 노말 벡터는 월드 좌표계에서 계산
+	output.normal = mul(input.normal, (float3x3)worldMatrix);
+
+	// 픽셀 쉐이더로 넘기기 전에 정규화
+	output.normal = normalize(output.normal);
+
+	return output;
+}
