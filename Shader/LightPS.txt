@@ -6,6 +6,7 @@ SamplerState SampleType;
 cbuffer LightBuffer
 {
 	// 라이트의 색과 방향을 담는 용도
+	float4 AmbientColor;  // 주변광
 	float4 DiffuseColor;
 	float3 LightDirection;
 	float Padding;
@@ -32,6 +33,9 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 
 	textureColor = shaderTexture.Sample(SampleType, input.tex);
 
+	// 기본 출력 색상을 모든 픽셀의 AmbientColor 값으로 설정
+	color = AmbientColor;
+
 	// 계산을 위해 조명의 방향을 반전시킴
 	LightDir = -LightDirection;
 
@@ -39,8 +43,16 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 	// 조도 = 삼각형의 노말벡터와 라이트의 방향 벡터 내적값.
 	LightIntensity = saturate(dot(input.normal, LightDir));
 
-	// 계산된 빛의 세기를 텍스쳐 픽셀의 값과 조합해서 최종 색상을 만들어 낸다.
-	color = saturate(DiffuseColor * LightIntensity);
+	// 노말벡터와 라이트 벡터의 내적값이 0보다 크다면 라이트값을 주변광(AmbientLight)에 더하고
+	// 그렇지 않다면 라이트값을 더하지 않도록 한다.
+	if(LightIntensity > 0.0f)
+	{
+		color += (DiffuseColor * LightIntensity);
+	}
+
+	// 주변광과 라이트를 더한 결과가 1이 넘을 수 있으므로
+	// saturate 함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
+	color = saturate(color);
 	color = color * textureColor;
 
 

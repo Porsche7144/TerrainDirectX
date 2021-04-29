@@ -10,6 +10,7 @@ struct MatrixBufferType
 
 struct LightBufferType
 {
+	Vector4 AmbientColor;
 	Vector4 DiffuseColor;
 	Vector3 LightDirection;
 
@@ -32,7 +33,7 @@ public:
 public:
 	bool Init(ID3D11Device* pDevice, HWND hwnd);
 	bool Render(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, int IndexCount, 
-					Matrix World, Matrix View, Matrix Proj, Vector3 LightDir, Vector4 DiffuseColor);
+					Matrix World, Matrix View, Matrix Proj, Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor);
 	bool Release();
 
 	bool InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const WCHAR* ps);
@@ -41,7 +42,7 @@ public:
 
 	void OutputShaderErrorMessage(ID3DBlob* ErrorMessage, HWND hwnd, const WCHAR* filename);
 	bool SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture,
-					Matrix World, Matrix View, Matrix Proj, Vector3 LightDir, Vector4 DiffuseColor);
+					Matrix World, Matrix View, Matrix Proj, Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor);
 
 public:
 	Shader();

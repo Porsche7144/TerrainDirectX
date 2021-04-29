@@ -5,6 +5,7 @@ Model::Model()
 	m_pVertexBuffer = nullptr;
 	m_pIndexBuffer = nullptr;
 	m_pTextureClass = nullptr;
+	m_pModelType = nullptr;
 }
 
 // 모델의 인덱스 개수를 알려주는 함수
@@ -37,9 +38,75 @@ bool Model::LoadTexture(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, co
 	return true;
 }
 
-bool Model::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const TCHAR* Filename)
+bool Model::LoadModelText(const TCHAR* texName)
+{
+	ifstream fin;
+	char input;
+	int i;
+
+	// 텍스트 파일 오픈
+	fin.open(texName);
+
+	// 파일 열기에 실패하면 나가기
+	if (fin.fail())
+	{
+		return false;
+	}
+
+	// 정점 카운트값 까지 읽기
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+
+	// 정점 카운트 개수를 읽는다
+	fin >> m_iVertexCount;
+
+	// 인덱스 수를 정점 수와 같은 수로 세팅
+	m_iIndexCount = m_iVertexCount;
+
+	// 읽어온 정점 갯수만큼 객체 생성
+	m_pModelType = new ModelType[m_iVertexCount];
+	if (!m_pModelType)
+	{
+		return false;
+	}
+
+	// 데이터 시작부분 까지 읽기
+	fin.get(input);
+	while (input != ':')
+	{
+		fin.get(input);
+	}
+	fin.get(input);
+	fin.get(input);
+
+	// 정점 정보를 읽어온다.
+	for (int i = 0; i < m_iVertexCount; i++)
+	{
+		fin >> m_pModelType[i].x >> m_pModelType[i].y >> m_pModelType[i].z;
+		fin >> m_pModelType[i].tu >>  m_pModelType[i].tv;
+		fin >> m_pModelType[i].nx >>  m_pModelType[i].ny >> m_pModelType[i].nz;
+	}
+	
+	// 텍스트 닫기
+	fin.close();
+
+	return true;
+}
+
+bool Model::Init(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const TCHAR* Filename, const TCHAR* texName)
 {
 	bool result;
+
+
+	// 텍스트 로드
+	result = LoadModelText(texName);
+	if (!result)
+	{
+		return false;
+	}
 
 	// 정점버퍼와 인덱스버퍼 초기화
 	result = InitBuffers(pDevice);
@@ -65,12 +132,6 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 	D3D11_BUFFER_DESC VertexBufferDesc, IndexBufferDesc;
 	D3D11_SUBRESOURCE_DATA VertexData, IndexData;
 
-	// 정점 배열의 크기 설정
-	m_iVertexCount = 4;
-	
-	// 인덱스 배열의 크기 설정
-	m_iIndexCount = 6;
-
 	// 버텍스 생성
 	vertices = new VertexType[m_iVertexCount];
 	if (!vertices)
@@ -85,36 +146,19 @@ bool Model::InitBuffers(ID3D11Device* pDevice)
 		return false;
 	}
 
+
+	// 파일로 읽어온 정점 / 인덱스 데이터를
 	// 정점 / 인덱스 배열에 삼각형의 각 점과 순서를 저장.
 	// 점들을 시계방향으로 만들어야 함. 반시계방향으로 만들게 되면 DirectX에서 삼각형이 반대편을
 	// 바라본다고 판단해 Backface Culling에 의해 그려지지 않게됨.
+	for (int i = 0; i < m_iVertexCount; i++)
+	{
+		vertices[i].pos = Vector3(m_pModelType[i].x, m_pModelType[i].y, m_pModelType[i].z);
+		vertices[i].TextureUV = Vector2(m_pModelType[i].tu, m_pModelType[i].tv);
+		vertices[i].normal = Vector3(m_pModelType[i].nx, m_pModelType[i].ny, m_pModelType[i].nz);
 
-	// 정점 배열에 값 저장
-	vertices[0].pos = Vector3(-1.0f, -1.0f, 0.0f); // 왼쪽 아래
-	vertices[0].TextureUV = Vector2(0.0f, 1.0f);
-	vertices[0].normal = Vector3(0.0f, 0.0f, -1.0f);
-
-	vertices[1].pos = Vector3(-1.0f, 1.0f, 0.0f); // 위 왼쪽
-	vertices[1].TextureUV = Vector2(0.0f, 0.0f);
-	vertices[1].normal = Vector3(0.0f, 0.0f, -1.0f);
-
-	vertices[2].pos = Vector3(1.0f, 1.0f, 0.0f); // 오른쪽 위
-	vertices[2].TextureUV = Vector2(1.0f, 0.0f);
-	vertices[2].normal = Vector3(0.0f, 0.0f, -1.0f);
-
-	vertices[3].pos = Vector3(1.0f, -1.0f, 0.0f); // 오른쪽 아래
-	vertices[3].TextureUV = Vector2(1.0f, 1.0f);
-	vertices[3].normal = Vector3(0.0f, 0.0f, -1.0f);
-
-
-	// 인덱스 배열에 값 저장
-	indices[0] = 0; // 왼쪽 아래
-	indices[1] = 1; // 위
-	indices[2] = 2; // 오른쪽 아래
-
-	indices[3] = 0; // 위 왼쪽
-	indices[4] = 2; // 위 오른쪽
-	indices[5] = 3; // 오른쪽 아래
+		indices[i] = i;
+	}
 
 	// 정점버퍼 구조체 초기화
 	ZeroMemory(&VertexBufferDesc, sizeof(VertexBufferDesc));
@@ -204,11 +248,22 @@ bool Model::RenderBuffer(ID3D11DeviceContext* pContext)
 
 bool Model::Release()
 {
-
+	ReleaseModelText();
 	ReleaseTexture();
 
 	// 정점버퍼와 인덱스버퍼 해제
 	ReleaseBuffer();
+
+	return true;
+}
+
+bool Model::ReleaseModelText()
+{
+	if (m_pModelType)
+	{
+		delete[] m_pModelType;
+		m_pModelType = NULL;
+	}
 
 	return true;
 }

@@ -35,7 +35,7 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 	// 모델 클래스 초기화
-	Result = m_pModel->Init(m_D3d->GetDevice(), m_D3d->GetDeviceContext(), _T("../Image/seafloor.dds"));
+	Result = m_pModel->Init(m_D3d->GetDevice(), m_D3d->GetDeviceContext(), _T("../Image/stone.dds"), _T("../data/cube.txt"));
 	if (!Result)
 	{
 		MessageBox(hwnd, L"Model 오브젝트 클래스 초기화 실패", L"Init Error", MB_OK);
@@ -63,8 +63,10 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 	// 라이트 컬러, 방향 초기화
-	m_pLight->SetDiffuseColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-	m_pLight->SetDirection(Vector3(-1.0f, 0.0f, 0.0f));
+	// 주변광의 밝기를 15%만큼
+	m_pLight->SetAmbientColor(Vector4(0.10f, 0.10f, 0.10f, 1.0f));
+	m_pLight->SetDiffuseColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	m_pLight->SetDirection(Vector3(0.0f, 0.0f, 1.0f));
 
 	return true;
 }
@@ -112,7 +114,7 @@ bool Graphics::Frame()
 	// 매 프라임마다 달라지는 회전정보를 저장하기 위해 static 변수 추가
 	static float rotation = 0.0f;
 
-	rotation += (float)DirectX_PI * 0.0001f;
+	rotation += (float)DirectX_PI * 0.00005f;
 	if (rotation >= 360.0f)
 	{
 		rotation -= 360.0f;
@@ -154,7 +156,7 @@ bool Graphics::Render(float rotation)
 	// 쉐이더를 사용해 모델 렌더링
 	result = m_pShader->Render(m_D3d->GetDeviceContext(),m_pModel->GetTexture() ,m_pModel->GetIndexCount(), 
 								worldMatrix, viewMatrix, ProjMatrix, 
-								m_pLight->GetDirection(), m_pLight->GetDiffuseColor());
+								m_pLight->GetDirection(), m_pLight->GetDiffuseColor(), m_pLight->GetAmbientColor());
 	if (!result)
 	{
 		return false;

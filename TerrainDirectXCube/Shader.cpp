@@ -221,11 +221,11 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 
 bool Shader::Render(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, int IndexCount, 
 					Matrix World, Matrix View, Matrix Proj,
-					Vector3 LightDir, Vector4 DiffuseColor)
+					Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor)
 {
 
 	// 렌더링에 사용할 쉐이더 인자 입력
-	if(!SetShaderParameters(pContext, texture, World, View, Proj, LightDir, DiffuseColor))
+	if(!SetShaderParameters(pContext, texture, World, View, Proj, LightDir, DiffuseColor , AmbientColor))
 	{
 		return false;
 	}
@@ -258,7 +258,7 @@ bool Shader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture ,
 								Matrix World, Matrix View, Matrix Proj, 
-								Vector3 LightDir, Vector4 DiffuseColor)
+								Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
@@ -314,6 +314,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderReso
 		pLightData = (LightBufferType*)MappedResource.pData;
 
 		// 버퍼에 라이트 색상과 방향 설정
+		pLightData->AmbientColor = AmbientColor;
 		pLightData->DiffuseColor = DiffuseColor;
 		pLightData->LightDirection = LightDir;
 		pLightData->Padding = 0.0f;
