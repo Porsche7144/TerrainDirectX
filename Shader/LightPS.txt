@@ -9,6 +9,8 @@ cbuffer LightBuffer
 	float4 AmbientColor;  // 주변광
 	float4 DiffuseColor;
 	float3 LightDirection;
+	float SpecularPower; // 반사강도
+	float4 SpecularColor; // 반사색
 	float Padding;
 }
 
@@ -17,6 +19,7 @@ struct PS_INPUT
 	float4 pos : SV_POSITION;
     float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float3 ViewDirection : TEXCOORD1;
 };
 
 //////////////////////////////////////////////
@@ -29,6 +32,8 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 	float4 textureColor;
 	float3 LightDir;
 	float LightIntensity; // 빛의 조도
+	float3 reflection;
+	float4 Specular;
 	float4 color;
 
 	textureColor = shaderTexture.Sample(SampleType, input.tex);
@@ -48,11 +53,22 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 	if(LightIntensity > 0.0f)
 	{
 		color += (DiffuseColor * LightIntensity);
+
+		// 주변광과 라이트를 더한 결과가 1이 넘을 수 있으므로
+		// saturate 함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
+		color = saturate(color);
+
+		// 광도, 라이트방향, 노말벡터를 기준으로 반사 벡터 계산
+		reflection = normalize(2 * LightIntensity * input.normal - LightDir);
+
+		// 반사광의 총량은 반사벡터와 디렉션을 이용하여 계산
+		// 광원과 카메라 방향 사이의 각도가 작을수록 더 많은 반사광이 비쳐서 들어온다.
+		// 그리고 그 결과를 SpecularPower값만큼의 제곱으로 나타내게 한다.
+		// SpecularPower의 값이 작을수록 빛이 더 많이 들어오게 된다.
+		Specular = pow(saturate(dot(reflection, input.ViewDirection)), SpecularPower);
 	}
 
-	// 주변광과 라이트를 더한 결과가 1이 넘을 수 있으므로
-	// saturate 함수로 최종 색상이 적절한 값이 되도록 잘라낸다.
-	color = saturate(color);
+	// 텍스쳐와 색상을 곱해 결과를 가져온다.
 	color = color * textureColor;
 
 
