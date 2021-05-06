@@ -26,7 +26,7 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 		return false;
 	}
 	// 카메라 위치 세팅
-	m_pCamera->SetPosition(Vector3(0.0f, 0.0f, -5.0f));
+	m_pCamera->SetPosition(Vector3(0.0f, 0.0f, -10.0f));
 
 	// 모델 클래스 생성
 	m_pModel = new Model;
@@ -64,9 +64,13 @@ bool Graphics::Init(int ScreenWidth, int ScreenHeight, HWND hwnd)
 	}
 	// 라이트 컬러, 방향 초기화
 	// 주변광의 밝기를 15%만큼
-	m_pLight->SetAmbientColor(Vector4(0.10f, 0.10f, 0.10f, 1.0f));
+	m_pLight->SetAmbientColor(Vector4(0.15f, 0.15f, 0.15f, 1.0f));
 	m_pLight->SetDiffuseColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 	m_pLight->SetDirection(Vector3(0.0f, 0.0f, 1.0f));
+	// 반사색
+	m_pLight->SetSpecularColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+	// 반사강도. 반사강도 값이 낮을수록 반사광 효과가 커진다.
+	m_pLight->SetSpecularPower(32.0f);
 
 	return true;
 }
@@ -156,7 +160,8 @@ bool Graphics::Render(float rotation)
 	// 쉐이더를 사용해 모델 렌더링
 	result = m_pShader->Render(m_D3d->GetDeviceContext(),m_pModel->GetTexture() ,m_pModel->GetIndexCount(), 
 								worldMatrix, viewMatrix, ProjMatrix, 
-								m_pLight->GetDirection(), m_pLight->GetDiffuseColor(), m_pLight->GetAmbientColor());
+								m_pLight->GetDirection(), m_pLight->GetDiffuseColor(), m_pLight->GetAmbientColor(),
+								m_pCamera->GetPosition(), m_pLight->GetSpecularPower(), m_pLight->GetSpecularColor());
 	if (!result)
 	{
 		return false;

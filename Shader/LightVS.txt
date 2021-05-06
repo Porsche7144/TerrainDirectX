@@ -1,17 +1,17 @@
 // HLSL
 
-cbuffer CameraBuffer
-{
-	float3 CameraPos;
-	float padding;
-};
-
 // Shader 클래스의 MatrixBufferType 구조와 같아야함.
 cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projMatrix;
+};
+
+cbuffer CameraBuffer
+{
+	float3 CameraPos;
+	float padding;
 };
 
 struct VS_INPUT
@@ -26,7 +26,7 @@ struct VS_OUTPUT
 	float4 pos : SV_POSITION;
     float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
-	float3 ViewDirection : TEXCOORD1; // VS에서 보는 방향을 계산하고, 반사광 계산을 위해 PS로 넘김.
+	float3 ViewDirection : TEXCOORD1;  // VS에서 보는 방향을 계산하고, 반사광 계산을 위해 PS로 넘김.
 };
 
 //////////////////////////////////////////////

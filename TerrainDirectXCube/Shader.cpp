@@ -55,6 +55,7 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 	UINT numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
+	D3D11_BUFFER_DESC cameraBufferDesc;
 
 
 	// 버텍스 쉐이더 컴파일
@@ -147,6 +148,34 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 	PixelShaderBuffer = 0;
 
 
+	// 텍스쳐 샘플러 상태 구조체 설정
+	D3D11_SAMPLER_DESC SamplerDesc;
+
+	// Filter 필터링 방식
+	// 최종 도형 표면에서 텍스쳐의 어느 픽셀이 사용되거나 혼합될 것인지 결정
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+	// 텍스쳐 주소 지정방식
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = 0.0f;
+	SamplerDesc.MaxAnisotropy = 1;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	SamplerDesc.BorderColor[0] = 0;
+	SamplerDesc.BorderColor[1] = 0;
+	SamplerDesc.BorderColor[2] = 0;
+	SamplerDesc.BorderColor[3] = 0;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// 텍스쳐 샘플러 스테이트 생성
+	hr = pDevice->CreateSamplerState(&SamplerDesc, &m_pSamplerState);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 	// 상수버퍼 세팅
 	// 상수버퍼는 정점 및 픽셀 쉐이더에서 사용될 상수를 모아 놓은 버퍼
 	// 상수버퍼 사용을 위해 코드 영역에 상수 버퍼 타입의 구조체를 정의하고,
@@ -169,6 +198,21 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 		return false;
 	}
 
+	// 카메라 상수버퍼 세팅
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	// 카메라 상수 버퍼 생성하여 정점 쉐이더 상수 버퍼에 접근 할 수 있도록 함
+	hr = pDevice->CreateBuffer(&cameraBufferDesc, NULL, &m_pCameraConstantBuffer);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 	// 라이트 상수버퍼 세팅
 	// 상수 버퍼의 크기가 16의 배수인지 주의해야한다.
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -186,46 +230,18 @@ bool Shader::InitShader(ID3D11Device* pDevice, HWND hwnd, const WCHAR* vs, const
 	}
 
 
-
-	// 텍스쳐 샘플러 상태 구조체 설정
-	D3D11_SAMPLER_DESC SamplerDesc;
-
-	// Filter 필터링 방식
-	// 최종 도형 표면에서 텍스쳐의 어느 픽셀이 사용되거나 혼합될 것인지 결정
-	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-
-	// 텍스쳐 주소 지정방식
-	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	SamplerDesc.MipLODBias = 0.0f;
-	SamplerDesc.MaxAnisotropy = 16;
-	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	SamplerDesc.BorderColor[0] = 1.0f;
-	SamplerDesc.BorderColor[1] = 0;
-	SamplerDesc.BorderColor[2] = 0;
-	SamplerDesc.BorderColor[3] = 1.0f;
-	SamplerDesc.MinLOD = FLT_MIN;
-	SamplerDesc.MaxLOD = FLT_MAX;
-
-	// 텍스쳐 샘플러 스테이트 생성
-	hr = pDevice->CreateSamplerState(&SamplerDesc, &m_pSamplerState);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-
 	return true;
 }
 
 bool Shader::Render(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture, int IndexCount, 
 					Matrix World, Matrix View, Matrix Proj,
-					Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor)
+					Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor, Vector3 CameraPos, 
+					float SpecularPower, Vector4 SpecularColor)
 {
 
 	// 렌더링에 사용할 쉐이더 인자 입력
-	if(!SetShaderParameters(pContext, texture, World, View, Proj, LightDir, DiffuseColor , AmbientColor))
+	if(!SetShaderParameters(pContext, texture, World, View, Proj, LightDir, DiffuseColor , AmbientColor, 
+						    CameraPos, SpecularPower, SpecularColor))
 	{
 		return false;
 	}
@@ -258,18 +274,24 @@ bool Shader::RenderShader(ID3D11DeviceContext* pContext, int IndexCount)
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderResourceView* texture ,
 								Matrix World, Matrix View, Matrix Proj, 
-								Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor)
+								Vector3 LightDir, Vector4 DiffuseColor, Vector4 AmbientColor, Vector3 CameraPos,
+								float SpecularPower, Vector4 SpecularColor)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	MatrixBufferType* pData;
 	LightBufferType* pLightData;
+	CameraBufferType* pCameraData;
 	UINT BufferNumber;
 
+	Matrix worldMat;
+	Matrix viewMat;
+	Matrix projMat;
+
 	// 행렬을 전치하여 쉐이더에서 사용 할 수 있게 함.
-	World = World.Transpose();
-	View = View.Transpose();
-	Proj = Proj.Transpose();
+	worldMat = World.Transpose();
+	viewMat = View.Transpose();
+	projMat = Proj.Transpose();
 
 	// 상수 버퍼의 내용을 쓸 수 있도록 잠금
 	hr = pContext->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
@@ -283,11 +305,10 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderReso
 		pData = (MatrixBufferType*)MappedResource.pData;
 
 		// 상수 버퍼에 행렬을 복사
-		pData->world = World;
-		pData->view = View;
-		pData->Projection = Proj;
+		pData->world = worldMat;
+		pData->view = viewMat;
+		pData->Projection = projMat;
 	}
-
 
 	// 상수버퍼 잠금 해제
 	pContext->Unmap(m_pConstantBuffer, 0);
@@ -298,8 +319,40 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderReso
 	// 정점 쉐이더의 상수 버퍼를 바뀐 값으로 설정
 	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pConstantBuffer);
 
+
+
+	// 카메라 상수버퍼 세팅
+	// Map함수로 버퍼에 Lock을 걸고 버퍼의 포인터를 얻어온다
+	hr = pContext->Map(m_pCameraConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	else
+	{
+		pCameraData = (CameraBufferType*)MappedResource.pData;
+
+		// 버퍼에 라이트 색상과 방향 설정
+		pCameraData->CameraPos = CameraPos;
+		pCameraData->Padding = 0.0f;
+	}
+
+	// 상수버퍼 잠금 해제
+	pContext->Unmap(m_pCameraConstantBuffer, 0);
+
+	// 버텍스 쉐이더에서의 상수 버퍼의 위치 설정
+	// 카메라 버퍼는 버텍스 쉐이더에서 두번째 버퍼이므로 1로 지정
+	BufferNumber = 1;
+
+	// 버텍스 쉐이더에 버퍼 설정
+	// 버텍스 쉐이더를 설정하는 것이기 때문에 PSSetConstantBuffer 함수 사용
+	pContext->VSSetConstantBuffers(BufferNumber, 1, &m_pCameraConstantBuffer);
+
+
+
 	// 픽셀 쉐이더에서 쉐이더 텍스쳐 리소스 설정
 	pContext->PSSetShaderResources(0, 1, &texture);
+
 
 
 	// 조명 상수버퍼 세팅
@@ -317,7 +370,9 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* pContext, ID3D11ShaderReso
 		pLightData->AmbientColor = AmbientColor;
 		pLightData->DiffuseColor = DiffuseColor;
 		pLightData->LightDirection = LightDir;
-		pLightData->Padding = 0.0f;
+		pLightData->SpecularPower = SpecularPower;
+		pLightData->SpecularColor = SpecularColor;
+		// pLightData->Padding = 0.0f;
 	}
 
 	// 상수버퍼 잠금 해제
@@ -358,6 +413,12 @@ bool Shader::ReleaseShader()
 		m_pConstantBuffer = 0;
 	}
 
+	if (m_pCameraConstantBuffer)
+	{
+		m_pCameraConstantBuffer->Release();
+		m_pCameraConstantBuffer = 0;
+	}
+
 	if (m_pLightConstantBuffer)
 	{
 		m_pLightConstantBuffer->Release();
@@ -396,6 +457,7 @@ Shader::Shader()
 	m_pConstantBuffer = nullptr;
 	m_pSamplerState = nullptr;
 	m_pLightConstantBuffer = nullptr;
+	m_pCameraConstantBuffer = nullptr;
 }
 
 Shader::~Shader()

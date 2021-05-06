@@ -41,6 +41,9 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 	// 기본 출력 색상을 모든 픽셀의 AmbientColor 값으로 설정
 	color = AmbientColor;
 
+	// Specular 초기값
+	Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
 	// 계산을 위해 조명의 방향을 반전시킴
 	LightDir = -LightDirection;
 
@@ -71,6 +74,8 @@ float4 PS_PixelShader(PS_INPUT input) : SV_TARGET
 	// 텍스쳐와 색상을 곱해 결과를 가져온다.
 	color = color * textureColor;
 
+	// 반사효과를 마지막에 더해야 제대로 표시된다.
+	color = saturate(color + Specular);
 
 	return color;
 }
