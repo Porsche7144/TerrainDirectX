@@ -1,6 +1,9 @@
 // HLSL
 
 // Shader 클래스의 MatrixBufferType 구조와 같아야함.
+// HLSL 구조체 순서는 Shader.cpp에서 상수버퍼로 넘긴 구조체 순서와 같아야한다.
+// 반대로 하면 안뜸.. 삽질해서 알아냄
+
 cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
