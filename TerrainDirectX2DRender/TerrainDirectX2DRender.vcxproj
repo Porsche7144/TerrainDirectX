@@ -137,6 +137,7 @@
     <ClCompile Include="dxtk\DDSTextureLoader.cpp" />
     <ClCompile Include="dxtk\WICTextureLoader.cpp" />
     <ClCompile Include="D3dClass.cpp" />
+    <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="dxtk\pch.h" />
     <ClInclude Include="dxtk\PlatformHelpers.h" />
     <ClInclude Include="dxtk\WICTextureLoader.h" />
+    <ClInclude Include="FontClass.h" />
     <ClInclude Include="IncludeStd.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="D3dClass.h" />
