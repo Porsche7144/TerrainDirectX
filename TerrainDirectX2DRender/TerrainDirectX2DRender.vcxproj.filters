@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Before">
+      <UniqueIdentifier>{c45d1438-dee2-42cc-9638-fa3d5971431e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dxtk">
+      <UniqueIdentifier>{69e4d205-a49d-4f30-afd2-1c2c8c110f95}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="systemclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="D3dClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>Before</Filter>
+    </ClCompile>
+    <ClCompile Include="dxtk\DDSTextureLoader.cpp">
+      <Filter>dxtk</Filter>
+    </ClCompile>
+    <ClCompile Include="dxtk\WICTextureLoader.cpp">
+      <Filter>dxtk</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="systemclass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="D3dClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMath.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>Before</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\WICTextureLoader.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\PlatformHelpers.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\pch.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\LoaderHelpers.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\DirectXHelpers.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\DDSTextureLoader.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="dxtk\DDS.h">
+      <Filter>dxtk</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="IncludeStd.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl">
+      <Filter>헤더 파일</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\Shader\colorVS.txt">
+      <Filter>Before</Filter>
+    </Text>
+    <Text Include="..\Shader\colorPS.txt">
+      <Filter>Before</Filter>
+    </Text>
+    <Text Include="..\Shader\TextureShaderPS.txt" />
+    <Text Include="..\Shader\TextureShaderVS.txt" />
+    <Text Include="..\Shader\LightPS.txt" />
+    <Text Include="..\Shader\LightVS.txt" />
+  </ItemGroup>
+</Project>
